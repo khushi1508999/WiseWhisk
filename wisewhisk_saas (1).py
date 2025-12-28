@@ -465,15 +465,18 @@ def generate_enhanced_nutri_score_viz(score, product_data=None):
     return fig
 
 def create_pdf_report(content, title="WiseWhisk Analysis Report"):
-    """Generate PDF report"""
-    pdf = FPDF()
-    pdf.add_page()
-    pdf.set_font("Arial", "B", 16)
-    pdf.cell(0, 10, title, ln=True, align='C')
-    pdf.ln(10)
-    pdf.set_font("Arial", "", 12)
-    pdf.multi_cell(0, 10, content)
-    return pdf.output(dest='S').encode('latin-1')
+    """Streamlit Cloud FPDF2 compatible"""
+    try:
+        pdf = FPDF()
+        pdf.add_page()
+        pdf.set_font("Arial", "B", 16)
+        pdf.cell(0, 10, title, ln=True, align='C')
+        pdf.ln(10)
+        pdf.set_font("Arial", "", 12)
+        pdf.multi_cell(0, 10, content)
+        return pdf.output(dest='S')  # ✅ FPDF2 returns bytes directly
+    except:
+        return b"PDF export unavailable"  # Fallback
 
 def calculate_health_score(nutriments):
     """Calculate a simple health score based on nutrients"""

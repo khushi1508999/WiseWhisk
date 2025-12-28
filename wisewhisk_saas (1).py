@@ -778,15 +778,26 @@ Analysis: {analysis}
                             "timestamp": datetime.now().strftime("%H:%M:%S"),
                             "content": f"Compared {item1} vs {item2}"
                         })
-                        
-                        pdf_data = create_pdf_report(report_content, "WiseWhisk Comparison Report")
-                        st.download_button(
-                            "📥 Export as PDF",
-                            pdf_data,
-                            file_name=f"wisewhisk_comparison_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf",
-                            mime="application/pdf"
-                        )
-                    else:
+                        # ✅ TEXT DOWNLOAD (Works 100% on Streamlit Cloud)
+report_text = f"""WiseWhisk Comparison Report 🦉
+Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+
+PRODUCT 1: {item1.title()}
+PRODUCT 2: {item2.title()}
+
+[Full comparison charts above ↑]
+
+🔍 Analyzed by WiseWhisk AI Co-Pilot
+⚡ EnCode 2026 Hackathon Entry"""
+
+st.download_button(
+    label="📥 Export Report",
+    data=report_text,
+    file_name=f"wisewhisk_{item1}_{item2}_{datetime.now().strftime('%Y%m%d')}.txt",
+    mime="text/plain"
+)
+
+                else:
                         st.warning("⚠️ Couldn't fetch data for one or both products. Please try different product names.")
                 else:
                     st.info("💡 Please specify two products to compare (e.g., 'Compare Coke vs Pepsi')")

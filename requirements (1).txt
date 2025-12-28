@@ -8,3 +8,5 @@ speechrecognition
 pyaudio
 openai
 python-dotenv
+openfoodfacts
+gdown

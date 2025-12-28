@@ -155,14 +155,24 @@ def generate_nutri_score_viz(score):
     return fig
 
 def create_pdf_report(content, title="WiseWhisk Analysis Report"):
-    pdf = FPDF()
-    pdf.add_page()
-    pdf.set_font("Arial", "B", 16)
-    pdf.cell(0, 10, title, ln=True, align='C')
-    pdf.ln(10)
-    pdf.set_font("Arial", "", 12)
-    pdf.multi_cell(0, 10, content)
-    return pdf.output(dest='S').encode('latin-1')
+    """Fixed FPDF2 PDF generation"""
+    try:
+        from fpdf import FPDF
+        pdf = FPDF()
+        pdf.add_page()
+        pdf.set_font("Arial", "B", 16)
+        pdf.cell(0, 10, title, ln=True, align='C')
+        pdf.ln(10)
+        pdf.set_font("Arial", "", 12)
+        pdf.multi_cell(0, 10, content)
+        
+        # FPDF2 fix: output() directly returns bytes
+        pdf_data = pdf.output(dest='S')
+        return pdf_data
+    except Exception as e:
+        st.error(f"PDF generation failed: {e}")
+        return "PDF generation unavailable".encode()
+
 
 # --- Sidebar Menu ---
 # --- Sidebar Menu (FIXED INDENTATION) ---

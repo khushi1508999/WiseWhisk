@@ -789,13 +789,7 @@ PRODUCT 2: {item2.title()}
 
 🔍 Analyzed by WiseWhisk AI Co-Pilot
 ⚡ EnCode 2026 Hackathon Entry"""
-
-st.download_button(
-    "📥 Copy Results",
-    f"{item1} vs {item2}\n\nSee charts above ↑\n\nWiseWhisk AI - EnCode 2026",
-    "wisewhisk_results.txt",
-    "text/plain"
-)
+st.success("✅ Comparison Saved to History! 🦉")
 
                 else:
                         st.warning("⚠️ Couldn't fetch data for one or both products. Please try different product names.")

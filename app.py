@@ -254,8 +254,25 @@ if menu == "Chat Interface":
                     report_content = f"WiseWhisk Comparison Report: {item1} vs {item2}\nGenerated on: {datetime.now()}\n\nResults analyzed by WiseWhisk AI."
                     st.session_state.history.append({"timestamp": datetime.now().strftime("%H:%M:%S"), "content": f"Compared {item1} and {item2}"})
                     
-                    pdf_data = create_pdf_report(report_content)
-                    st.download_button("📥 Export Comparison as PDF", pdf_data, file_name="wisewhisk_comparison.pdf", mime="application/pdf")
+                    # Text download (100% reliable on Streamlit Cloud)
+report_content = f"""
+WiseWhisk Comparison Report
+Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+
+{item1.title()} vs {item2.title()}
+
+🔍 Analyzed by WiseWhisk AI Co-Pilot
+⚡ EnCode 2026 Hackathon Entry
+
+[Full comparison above ↑]
+"""
+
+st.download_button(
+    label="📥 Export Comparison Report",
+    data=report_content,
+    file_name=f"wisewhisk_comparison_{item1}_{item2}.txt",
+    mime="text/plain"
+)
                 else:
                     st.write("Please name two products to compare, e.g., 'Compare Coke vs Pepsi'.")
 

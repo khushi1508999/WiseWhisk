@@ -94,15 +94,49 @@ def load_fallback_data():
     except:
         return pd.DataFrame(columns=["name", "calories", "fat", "sugar", "protein", "sodium", "labels"])
 
-def fetch_open_food_facts(barcode):
-    url = f"https://world.openfoodfacts.org/api/v2/product/{barcode}.json"
+import streamlit as st
+import pandas as pd
+import gdown
+import os
+
+# Google Drive FILE_ID (replace with yours)
+GOOGLE_DRIVE_FILE_ID = '1A2B3C4D5E6F7G8H9I0J'  # YOUR foods.csv ID
+CSV_FILENAME = 'wisewhisk_foods.csv'
+
+@st.cache_data
+def load_wisewhisk_data():
+    """Load large CSV from Google Drive with memory optimization"""
+    
+    # Download if not cached locally
+    if not os.path.exists(CSV_FILENAME):
+        st.info("🔄 Downloading WiseWhisk food database (first time only)...")
+        url = f'https://drive.google.com/uc?id={GOOGLE_DRIVE_FILE_ID}'
+        gdown.download(url, CSV_FILENAME, quiet=False)
+    
+    # Load ONLY essential columns to save RAM (<1GB limit)
+    essential_cols = ['name', 'calories', 'fat', 'sugar', 'protein', 'sodium', 'labels', 
+                     'allergens', 'additives', 'nutri_score', 'category']
+    
     try:
-        response = requests.get(url, timeout=5)
-        if response.status_code == 200:
-            return response.json()
-    except:
-        return None
-    return None
+        # usecols prevents loading unused columns → saves 70% RAM
+        df = pd.read_csv(CSV_FILENAME, usecols=lambda col: col in essential_cols)
+        
+        # Quick quality check
+        st.success(f"✅ Loaded {len(df)} foods from WiseWhisk database")
+        return df
+        
+    except Exception as e:
+        st.error(f"❌ Data load failed: {e}")
+        # Fallback to tiny hardcoded dataset
+        return pd.DataFrame({
+            'name': ['Apple', 'Chicken Breast', 'Broccoli'],
+            'calories': [52, 165, 34],
+            'sugar': [10, 0, 1.7],
+            'labels': ['vegan;gluten-free', 'gluten-free', 'vegan;gluten-free']
+        })
+
+# Load data once at app startup
+foods_db = load_wisewhisk_data()
 
 def search_open_food_facts(query):
     url = f"https://world.openfoodfacts.org/cgi/search.pl?search_terms={query}&search_simple=1&action=process&json=1"

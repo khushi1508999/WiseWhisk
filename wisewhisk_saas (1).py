@@ -791,10 +791,10 @@ PRODUCT 2: {item2.title()}
 ⚡ EnCode 2026 Hackathon Entry"""
 
 st.download_button(
-    label="📥 Export Report",
-    data=report_text,
-    file_name=f"wisewhisk_{item1}_{item2}_{datetime.now().strftime('%Y%m%d')}.txt",
-    mime="text/plain"
+    "📥 Copy Results",
+    f"{item1} vs {item2}\n\nSee charts above ↑\n\nWiseWhisk AI - EnCode 2026",
+    "wisewhisk_results.txt",
+    "text/plain"
 )
 
                 else:

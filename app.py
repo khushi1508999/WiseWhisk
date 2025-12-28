@@ -100,8 +100,8 @@ import gdown
 import os
 
 # Google Drive FILE_ID (replace with yours)
-GOOGLE_DRIVE_FILE_ID = '1A2B3C4D5E6F7G8H9I0J'  # YOUR foods.csv ID
-CSV_FILENAME = 'wisewhisk_foods.csv'
+GOOGLE_DRIVE_FILE_ID = '1JcVZ2YIUovLG7znYKeHdhxHmIHpst9y1'  # YOUR foods.csv ID
+CSV_FILENAME = 'foods.csv'
 
 @st.cache_data
 def load_wisewhisk_data():

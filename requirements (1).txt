@@ -1,0 +1,10 @@
+streamlit
+pandas
+requests
+pillow
+plotly
+fpdf
+speechrecognition
+pyaudio
+openai
+python-dotenv

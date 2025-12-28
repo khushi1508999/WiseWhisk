@@ -3,10 +3,10 @@ pandas
 requests
 pillow
 plotly
-fpdf
+fpdf2
+gdown
+openfoodfacts
 speechrecognition
 pyaudio
 openai
 python-dotenv
-openfoodfacts
-gdown

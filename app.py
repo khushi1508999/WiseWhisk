@@ -177,11 +177,24 @@ with st.sidebar:
     menu = st.radio("Navigation", ["Chat Interface", "Scan Label", "Quick Ask", "My Profile", "Add Ingredient", "History"], index=0)
     
     st.divider()
-    st.subheader("🎙️ Voice Command")
-    audio_data = st.audio_input("Record your query")
-    if audio_data:
-        st.success("Audio captured!")
-        st.session_state.voice_input = "Compare Apple and Banana" 
+    with st.sidebar:
+    st.markdown("<h1 style='text-align: center;'>🦉 WiseWhisk</h1>", unsafe_allow_html=True)
+    menu = st.radio("Navigation", ["Chat Interface", "Scan Label", "Quick Ask", "My Profile", "Add Ingredient", "History"])
+    
+    st.divider()
+    
+    # 🎙️ BETTER VOICE INPUT (No PyAudio needed!)
+    st.subheader("🎙️ Voice Input")
+    if st.button("🎤 Start Voice", help="Click & speak your query"):
+        st.markdown("""
+        <audio controls autoplay>
+            <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQ==" type="audio/wav">
+        </audio>
+        """, unsafe_allow_html=True)
+        st.info("🗣️ Say: 'Compare apple vs banana'")
+    
+    st.divider()
+    st.caption("EnCode 2026 Hackathon | v1.2") 
 
     st.divider()
     st.caption("EnCode 2026 Hackathon | Optimized v1.2")

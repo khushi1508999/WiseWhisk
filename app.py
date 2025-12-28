@@ -165,25 +165,14 @@ def create_pdf_report(content, title="WiseWhisk Analysis Report"):
     return pdf.output(dest='S').encode('latin-1')
 
 # --- Sidebar Menu ---
+# --- Sidebar Menu (FIXED INDENTATION) ---
 with st.sidebar:
-    # Logo Integration
-    if os.path.exists("logo.png"):
-        st.markdown('<div class="sidebar-logo">', unsafe_allow_html=True)
-        st.image("logo.png", use_container_width=True)
-        st.markdown('</div>', unsafe_allow_html=True)
-    else:
-        st.markdown("<h1 style='text-align: center;'>🦉 WiseWhisk</h1>", unsafe_allow_html=True)
-    
-    menu = st.radio("Navigation", ["Chat Interface", "Scan Label", "Quick Ask", "My Profile", "Add Ingredient", "History"], index=0)
-    
-    st.divider()
-    with st.sidebar:
     st.markdown("<h1 style='text-align: center;'>🦉 WiseWhisk</h1>", unsafe_allow_html=True)
     menu = st.radio("Navigation", ["Chat Interface", "Scan Label", "Quick Ask", "My Profile", "Add Ingredient", "History"])
     
     st.divider()
     
-    # 🎙️ BETTER VOICE INPUT (No PyAudio needed!)
+    # 🎙️ Voice Input (No PyAudio!)
     st.subheader("🎙️ Voice Input")
     if st.button("🎤 Start Voice", help="Click & speak your query"):
         st.markdown("""
@@ -192,6 +181,9 @@ with st.sidebar:
         </audio>
         """, unsafe_allow_html=True)
         st.info("🗣️ Say: 'Compare apple vs banana'")
+    
+    st.divider()
+    st.caption("EnCode 2026 Hackathon | v1.2")
     
     st.divider()
     st.caption("EnCode 2026 Hackathon | v1.2") 

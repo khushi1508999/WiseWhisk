@@ -6,7 +6,5 @@ plotly
 fpdf2
 gdown
 openfoodfacts
-speechrecognition
-pyaudio
 openai
 python-dotenv

@@ -273,7 +273,7 @@ st.download_button(
     file_name=f"wisewhisk_comparison_{item1}_{item2}.txt",
     mime="text/plain"
 )
-                else:
+ else:
                     st.write("Please name two products to compare, e.g., 'Compare Coke vs Pepsi'.")
 
             elif intent == "safety_check":

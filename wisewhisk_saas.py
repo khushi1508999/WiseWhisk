@@ -5,7 +5,6 @@ import requests
 import os
 from PIL import Image
 import plotly.graph_objects as go
-from fpdf import FPDF
 import base64
 from datetime import datetime
 import re

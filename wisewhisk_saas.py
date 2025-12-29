@@ -7,6 +7,8 @@ from PIL import Image
 import plotly.graph_objects as go
 from datetime import datetime
 import re
+import speech_recognition as sr
+from io import BytesIO
 
 # Force English language
 os.environ['LANG'] = 'en_US.UTF-8'
@@ -139,6 +141,11 @@ st.markdown("""
         50% { opacity: 0.85; transform: scale(1.02); }
     }
     
+    @keyframes recording {
+        0%, 100% { color: #d4af37; }
+        50% { color: #ff4757; }
+    }
+    
     .alert-banner {
         background: linear-gradient(135deg, #ff4757 0%, #e63e11 100%);
         color: white;
@@ -158,6 +165,12 @@ st.markdown("""
     .alert-icon {
         font-size: 2rem;
         animation: pulse 1.5s ease-in-out infinite;
+    }
+    
+    .recording-indicator {
+        color: #d4af37;
+        font-weight: 700;
+        animation: recording 1s ease-in-out infinite;
     }
     
     .vs-container {
@@ -348,6 +361,27 @@ def get_data_analytics():
         "analyses": st.session_state.analysis_count,
         "comparisons": st.session_state.comparisons_made
     }
+
+def transcribe_audio(audio_bytes):
+    """Convert audio to text using Google Speech Recognition"""
+    try:
+        recognizer = sr.Recognizer()
+        
+        # Convert bytes to audio data
+        audio_file = sr.AudioFile(BytesIO(audio_bytes))
+        
+        with audio_file as source:
+            audio_data = recognizer.record(source)
+        
+        # Use Google Speech Recognition API
+        text = recognizer.recognize_google(audio_data, language='en-US')
+        return text.strip()
+    except sr.UnknownValueError:
+        return None
+    except sr.RequestError as e:
+        return None
+    except Exception as e:
+        return None
 
 def fetch_open_food_facts(barcode):
     """Fetch product data by barcode"""
@@ -622,7 +656,28 @@ elif menu == "Chat Interface":
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
     
-    if prompt := st.chat_input("Ask WiseWhisk about ingredients, nutrition, or product comparisons..."):
+    # Input Options
+    col1, col2 = st.columns([4, 1])
+    
+    with col1:
+        prompt = st.chat_input("Ask WiseWhisk about ingredients, nutrition, or product comparisons...")
+    
+    with col2:
+        st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
+        audio_input = st.audio_input("Record your question", label_visibility="collapsed")
+    
+    # Process Voice Input
+    if audio_input is not None:
+        with st.spinner("Transcribing audio..."):
+            prompt = transcribe_audio(audio_input.getvalue())
+        
+        if prompt:
+            st.info(f"You said: {prompt}")
+        else:
+            st.warning("Could not transcribe audio. Please speak clearly and try again.")
+    
+    # Process Text or Voice Input
+    if prompt:
         prompt = str(prompt).strip()
         st.session_state.messages.append({"role": "user", "content": prompt})
         with st.chat_message("user"):
@@ -906,32 +961,49 @@ elif menu == "Quick Ask":
         </div>
     """, unsafe_allow_html=True)
     
-    question = st.text_input("Ask a question", placeholder="e.g., Is oat milk healthy?")
+    col1, col2 = st.columns([4, 1])
     
-    if st.button("Get Answer", use_container_width=True):
+    with col1:
+        question = st.text_input("Ask a question", placeholder="e.g., Is oat milk healthy?")
+    
+    with col2:
+        st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
+        audio_question = st.audio_input("Record question", label_visibility="collapsed", key="quick_ask_audio")
+    
+    # Process Voice Input
+    if audio_question is not None:
+        with st.spinner("Transcribing audio..."):
+            question = transcribe_audio(audio_question.getvalue())
+        
         if question:
-            st.session_state.analysis_count += 1
+            st.info(f"You said: {question}")
+        else:
+            st.warning("Could not transcribe audio. Please try again.")
+    
+    # Process Question
+    if question and st.button("Get Answer", use_container_width=True):
+        st.session_state.analysis_count += 1
+        
+        with st.spinner("Finding answer..."):
+            data = search_open_food_facts(question)
+        
+        if data:
+            st.markdown(f"""
+                <div class="glass-card">
+                    <h3 style="margin-top: 0; color: #1e5666;">{data.get('product_name', 'Result')}</h3>
+                    <p><strong>Nutri-Score:</strong> {str(data.get('nutriscore_grade', 'N/A')).upper()}</p>
+                    <p><strong>Energy:</strong> {data.get('nutriments', {}).get('energy-kcal_100g', 'N/A')} kcal</p>
+                    <p><strong>Protein:</strong> {data.get('nutriments', {}).get('proteins_100g', 'N/A')} g</p>
+                    <p><strong>Sugar:</strong> {data.get('nutriments', {}).get('sugars_100g', 'N/A')} g</p>
+                </div>
+            """, unsafe_allow_html=True)
             
-            with st.spinner("Finding answer..."):
-                data = search_open_food_facts(question)
-            
-            if data:
-                st.markdown(f"""
-                    <div class="glass-card">
-                        <h3 style="margin-top: 0; color: #1e5666;">{data.get('product_name', 'Result')}</h3>
-                        <p><strong>Nutri-Score:</strong> {str(data.get('nutriscore_grade', 'N/A')).upper()}</p>
-                        <p><strong>Energy:</strong> {data.get('nutriments', {}).get('energy-kcal_100g', 'N/A')} kcal</p>
-                        <p><strong>Protein:</strong> {data.get('nutriments', {}).get('proteins_100g', 'N/A')} g</p>
-                        <p><strong>Sugar:</strong> {data.get('nutriments', {}).get('sugars_100g', 'N/A')} g</p>
-                    </div>
-                """, unsafe_allow_html=True)
-                
-                if data.get('nutriscore_grade'):
-                    st.plotly_chart(generate_enhanced_nutri_score_viz(data.get('nutriscore_grade')), use_container_width=True)
-            else:
-                st.info("No data found. Try a different query.")
-            
-            add_to_history("Quick Ask", question)
+            if data.get('nutriscore_grade'):
+                st.plotly_chart(generate_enhanced_nutri_score_viz(data.get('nutriscore_grade')), use_container_width=True)
+        else:
+            st.info("No data found. Try a different query.")
+        
+        add_to_history("Quick Ask", question)
 
 elif menu == "My Profile":
     st.markdown("<h1>Your Health Profile</h1>", unsafe_allow_html=True)

@@ -689,8 +689,3 @@ elif menu == "💬 Chat Interface":
                         col1, col2 = st.columns(2)
                         
                         colors = {'A': '#038141', 'B': '#85BB2F', 'C': '#FECB02', 'D': '#EE8100', 'E': '#E63E11'}
-                        
-                        with col1:
-                            winner1 = score1 > score2
-                            badge1 = "winner-badge" if winner1 else "loser-badge"
-                            badge_text1 = "🏆
